@@ -45,10 +45,10 @@ The Supervisor re-reads the actual files after every step. It doesn't trust the 
 
 ## Installation
 
-Copy the `ping-pong/` folder into your project's `.claude/skills/` directory:
+From your project root:
 
 ```bash
-cp -r ping-pong/ your-project/.claude/skills/ping-pong/
+mkdir -p .claude/skills && git clone https://github.com/ad-bak/ping-pong.git /tmp/ping-pong && cp -r /tmp/ping-pong/ping-pong .claude/skills/
 ```
 
 Requires [Claude Code](https://claude.ai/code).
