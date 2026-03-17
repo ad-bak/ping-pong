@@ -1,3 +1,8 @@
+---
+name: ping-pong
+description: Two-agent Dev/Supervisor loop for implementing tasks with review cycles. Use when the user wants structured development with planning and review. Invoke with /ping-pong.
+---
+
 # ping-pong
 
 Two genuinely separate Claude instances — Developer and Supervisor — working a task in a loop. Different prompts, different mindsets, no shared bias.
@@ -56,8 +61,10 @@ Print progress before each Dev turn:
 [Task {current_task}/{total_tasks}]
 ```
 
+**Parallel Dev agents:** If multiple tasks are independent (touch different files, no shared state), launch multiple Dev agents in parallel. Only parallelize when there is zero risk of file conflicts — if two tasks could edit the same file, run them sequentially.
+
 Each cycle:
-1. Launch **Dev agent** with current task + history → wait → print `DEV: [message]`
+1. Launch **Dev agent(s)** with current task(s) + history → wait → print `DEV: [message]`
 2. Launch **Supervisor agent** → wait → print `SUPERVISOR: [message]` → check keyword:
    - `NEXT` → increment task, continue loop
    - `REVISION` → same task, Dev fixes
@@ -71,7 +78,7 @@ If 8 turns pass without `APPROVED`, tell the user:
 
 ## Step 4 — Tests (on APPROVED only)
 
-When Supervisor says `APPROVED`, run the project's test command (check package.json for the test script). Print output to user. If tests fail, re-enter the loop with Dev — show the failure as context.
+When Supervisor says `APPROVED`, launch a **final Supervisor review** covering ALL changed files (not just the last step). This catches cross-cutting issues like missing resets, dangling imports, or forgotten cleanup in files outside the task list. Then run the project's test command (check package.json for the test script). Print output to user. If the review or tests surface issues, re-enter the loop with Dev — show the failure as context.
 
 ---
 
